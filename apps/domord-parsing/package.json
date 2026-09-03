@@ -1,11 +1,8 @@
 {
-  "name": "domord",
+  "name": "@domord/parsing-service",
+  "module": "index.ts",
   "type": "module",
   "private": true,
-  "workspaces": [
-    "packages/*",
-    "apps/*"
-  ],
   "devDependencies": {
     "@types/bun": "latest"
   },
