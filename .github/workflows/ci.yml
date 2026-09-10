@@ -1,0 +1,203 @@
+name: Base CI
+
+on:
+  push:
+    branches: [main, sandbox]
+    paths:
+      - "apps/chunking-service/**"
+      - "apps/parsing-service/**"
+      - "packages/types/**"
+      - "packages/config/**"
+      - ".github/workflows/ci.yml"
+
+  pull_request:
+    branches: [main, sandbox]
+    paths:
+      - "apps/chunking-service/**"
+      - "apps/parsing-service/**"
+      - "packages/types/**"
+      - "packages/config/**"
+      - ".github/workflows/ci.yml"
+
+jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    outputs:
+      chunking-service: ${{ steps.filter.outputs.chunking-service }}
+      parsing-service: ${{ steps.filter.outputs.parsing-service }}
+      types-packages: ${{ steps.filter.outputs.types-packages }}
+      config-packages: ${{ steps.filter.outputs.config-packages }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Detect changed paths
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            chunking-service:
+              - 'apps/chunking-service/**'
+              - 'packages/types/**'
+              - 'packages/config/**'
+            parsing-service:
+              - 'apps/parsing-service/**'
+              - 'packages/types/**'
+              - 'packages/config/**'
+            types-packages:
+              - 'packages/types/**'
+            config-packages:
+              - 'packages/config/**'
+
+  chunking-service:
+    needs: changes
+    if: ${{ needs.changes.outputs.chunking-service == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/chunking-service
+
+    steps:
+      - name: Checkout chunking service
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun ci
+
+      - name: Typecheck code
+        run: bun run typecheck
+
+      - name: Lint code
+        run: bun run lint
+
+      - name: Run tests
+        run: bun test
+
+      - name: Build applications
+        run: bun run build
+
+  parsing-service:
+    needs: changes
+    if: ${{ needs.changes.outputs.parsing-service == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/parsing-service
+
+    steps:
+      - name: Checkout parsing service
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun ci
+
+      - name: Typecheck code
+        run: bun run typecheck
+
+      - name: Lint code
+        run: bun run lint
+
+      - name: Run tests
+        run: bun test
+
+      - name: Build applications
+        run: bun run build
+
+  types-packages:
+    needs: changes
+    if: ${{ needs.changes.outputs.types-packages == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/types
+
+    steps:
+      - name: Checkout types packages
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun ci
+
+      - name: Typecheck code
+        run: bun run typecheck
+
+      - name: Lint code
+        run: bun run lint
+
+      - name: Run tests
+        run: bun test
+
+      - name: Build packages
+        run: bun run build
+
+  config-packages:
+    needs: changes
+    if: ${{ needs.changes.outputs.config-packages == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/config
+
+    steps:
+      - name: Checkout config packages
+        uses: actions/checkout@v4
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Cache Bun dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.bun/install/cache
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun ci
+
+      - name: Typecheck code
+        run: bun run typecheck
+
+      - name: Lint code
+        run: bun run lint
+
+      - name: Run tests
+        run: bun test
+
+      - name: Build packages
+        run: bun run build
