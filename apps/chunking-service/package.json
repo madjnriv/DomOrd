@@ -3,8 +3,19 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "dev": "",
+    "typecheck": "bun x tsc --noEmit",
+    "lint": "bun x eslint . --max-warnings 0",
+    "test:watch": "vitest",
+    "test": "vitest run",
+    "build": "bun run typecheck && tsc --build",
+    "validate": "bun run lint && bun run typecheck && bun run test:run"
+  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "eslint": "^10.11.0",
+    "vitest": "^5.0.1"
   },
   "peerDependencies": {
     "typescript": "^5"
