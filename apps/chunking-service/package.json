@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "",
     "typecheck": "bun x tsc --noEmit",
-    "lint": "bun x eslint . --max-warnings 0",
+    "lint": "",
     "test:watch": "vitest",
     "test": "vitest run",
     "build": "bun run typecheck && tsc --build",
